@@ -2,6 +2,7 @@ package org.example.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.util.Strings;
 import org.example.constants.TaskStatus;
 import org.example.model.Task;
 import org.example.persist.TaskRepository;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -52,6 +54,40 @@ public class TaskService {
     public Task getOne(Long id) {
         var entity = this.getById(id);
         return this.entityToObject(entity);
+    }
+
+    public Task update(Long id, String title, String description, LocalDate dueDate) {
+        var exists = this.getById(id);
+
+        exists.setTitle(Strings.isEmpty(title) ?
+                exists.getTitle() : title);
+        exists.setDescription(Strings.isEmpty(description) ?
+                exists.getDescription() : description);
+        exists.setDueDate(Objects.isNull(dueDate) ?
+                exists.getDueDate() : Date.valueOf(dueDate));
+
+        var updated = this.taskRepository.save(exists);
+        return this.entityToObject(updated);
+    }
+
+    public Task updateStatus(Long id, TaskStatus status) {
+        var entity = this.getById(id);
+
+        entity.setStatus(status);
+
+        var saves = this.taskRepository.save(entity);
+
+        return this.entityToObject(saves);
+    }
+
+    public boolean delete(Long id) {
+        try {
+            this.taskRepository.deleteById(id);
+        } catch (Exception e) {
+            log.error("an error occurred while deleting [{}]", e.toString());
+            return false;
+        }
+        return true;
     }
 
     private TaskEntity getById(Long id) {
