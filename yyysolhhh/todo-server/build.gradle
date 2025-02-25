@@ -20,6 +20,8 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
+    testImplementation 'org.springframework.boot:spring-boot-starter-test' // mock mvc 객체 생성 가능 - http 요청이나 응답 테스트
+    testImplementation 'org.mockito:mockito-junit-jupiter:3.12.4' //junit jupiter용 mockito extention 클래스 사용 - mock이나 stub 객체 생성
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }
